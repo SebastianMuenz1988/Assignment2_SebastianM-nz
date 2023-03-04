@@ -4,6 +4,39 @@
   font-weight: 400;
 }
 
-.movie img {
-  width: 200px;
+input {
+  display: block;
+  margin-bottom: 20px;
+}
+
+.info {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #eee;
+}
+
+.warning {
+  font-weight: bold;
+  color: rgb(111, 7, 7);
+}
+
+header {
+  background-color: #eedcdc;
+  padding: 0 20px;
+  margin-bottom: 10px;
+}
+
+header nav a {
+  display: inline-block;
+  padding: 20px;
+  color: rgb(7, 83, 7);
+  text-decoration: none;
+}
+
+header nav a:first-of-type {
+  padding-left: 0;
+}
+
+header nav a.active {
+  color: rgb(33, 150, 33);
 }
