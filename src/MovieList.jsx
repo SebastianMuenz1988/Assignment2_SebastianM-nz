@@ -14,7 +14,23 @@ export default function App() {
   // useState() hook returns an array of 2 variables [state variable, update function]
   // destructring and assign names to these values + assign empty array to state variable
   // setMovies funciton will re-render the component
-  const [movies, setMovies] = useState([]);
+  const [s, setS] = useState({
+    movies: [],
+    screening: [],
+  });
+
+  // Make a copy of the state
+  // so that changes to that copy
+  // can be used immediately
+  // (the state itself first changes on next call/render)
+  // Advantage: We can call set several times during
+  // the same 'cycle'... and store all changes correctly in
+  // in our single state variable 's'
+  let copyOfS = { ...s };
+  const set = (key, value) => {
+    copyOfS[key] = value;
+    setS({ ...copyOfS });
+  };
 
   // useEffect triggered by gjrd reload of the page
   // Self-executing asyncronous anonomyous function (()=>{})
@@ -23,20 +39,58 @@ export default function App() {
 
   useEffect(() => {
     fetchMovies();
+    fetchScreeningsOverview();
   }, []);
 
   const fetchMovies = async () => {
     const response = await fetch("/api/movies");
     const data = await response.json();
-    setMovies(data);
+    set("movies", data);
     console.log(data[0]);
   };
+  // {
+  //+   "id": 1,
+  //+   "title": "Crocodile Dundee",
+  //+   "description": {
+  //     "length": 89,
+  //     "categories": [
+  //       "Adventure",
+  //       "Comedy"
+  //     ],
+  //+    "posterImage": "/images/posters/tt0090555.jpg"
+  //   }
 
+  const fetchScreeningsOverview = async () => {
+    const response = await fetch("/api/screenings_overview");
+    const data = await response.json();
+    set("screening", data);
+    console.log(data[0]);
+  };
+  // {
+  //   "screeningId": 1,
+  //+  "screeningTime": "2023-05-01T16:00:00.000Z",
+  //   "movie": "Crocodile Dundee",
+  //+   "auditorium": "Stora Salongen"
+  // }
+
+  // merge the two arrays by id
+  const mergedObjects = s.movies.map((object1) => {
+    const object2 = s.screening.find((obj) => obj.screeningId === object1.id);
+    return { ...object1, ...object2 };
+  });
+
+  const sortedItems = [...mergedObjects].sort((a, b) => {
+    const dateA = new Date(a.screeningTime);
+    const dateB = new Date(b.screeningTime);
+    return dateA - dateB;
+  });
+
+  // ChildComponent "<Movie" GETS id , title and description FROM state variable "movies"
   return (
     <div className="App">
       <h1>Available Movies</h1>
-      {movies.map(({ id, title, description }) => (
-        <Movie key={id} title={title} description={description} />
+      {sortedItems.map(({ id, title, description, screeningTime, auditorium }) => (
+        <Movie key={id} title={title} description={description} screeningTime={screeningTime} auditorium={auditorium} />
       ))}
     </div>
   );

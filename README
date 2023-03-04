@@ -5,12 +5,29 @@ Feature Flicks is a small cinema that wants to start competing locally with SF. 
 Now they need help building a prototype for a website, where visitors should be able to:
 
 Get information about movies being shown, incl. dates and times.
-You should be able to see a list of screenings, sorted by the date they the movies are shown, with each date as a seperate headline (including date and weekday).
-For each screening, the date and time of the screening and the title, movie poster and length (in hours and minutes) of the movie should be shown
-You should be able to filter this list by category.
-When you click on a movie in the list - you should be transfered to the booking page where you can choose your seats.
-When you boko your ticket(s) you shall get a ‘receipt’ with the total price, the date and time, all the seat numbers and booking number.
-Feature Flicks would like to have a booking system where you can see a graphic view of the auditorium and its seats. You should be able to book a number of adjacent seats during a specific screening of a film.
+You should be able to see a list of screenings,
+sorted by the
+
+- date
+
+they the movies are shown, with
+
+- each date as a seperate headline (including date and weekday).
+
+For each screening,
+
+- the date and time of the screening and the
+- title,
+- movie poster and
+- length (in hours and minutes) of the movie should be shown
+
+You should be able to
+filter this list
+
+- by category.
+  When you click on a movie in the list - you should be transfered to the booking page where you can choose your seats.
+  When you boko your ticket(s) you shall get a ‘receipt’ with the total price, the date and time, all the seat numbers and booking number.
+  Feature Flicks would like to have a booking system where you can see a graphic view of the auditorium and its seats. You should be able to book a number of adjacent seats during a specific screening of a film.
 
 While booking, you should be able to choose the number of visitors and see the total price. When you complete a booking, you should receive a unique booking number, as well as be able to see which row(s) and seats you have booked.
 
