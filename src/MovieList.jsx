@@ -1,6 +1,4 @@
 import React from "react";
-import ReactDOM from "react-dom/client";
-
 import { useState, useEffect } from "react";
 // import our Movie component
 import Movie from "./Movie";
@@ -82,7 +80,8 @@ export default function App() {
   //   "title": "Adventure",
   //   "description": "This is the Adventure category."
   // }
-
+  console.log(s.movies);
+  console.log(s.screening);
   // merge the two arrays by id
   const mergedObjects = s.movies.map((object1) => {
     const object2 = s.screening.find((obj) => obj.screeningId === object1.id);

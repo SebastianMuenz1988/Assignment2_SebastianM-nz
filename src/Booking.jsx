@@ -31,6 +31,7 @@ export default function Booking() {
   useEffect(() => {
     fetchBookingsOverview();
     fetchOccupiedSeats();
+    console.log("useEffect called!");
   }, []);
 
   // total price, the date and time, all the seat numbers and booking number
@@ -68,9 +69,19 @@ export default function Booking() {
   //   "occupiedPercent": "32"
   // }
 
+  const pickedMovie = s.occupiedSeats.find((obj) => obj.screeningId === screeningId);
+  console.log(pickedMovie);
+
+  const TimeDisplay = (timeCode) => {
+    const date = new Date(timeCode);
+    const newDate = date.toLocaleString();
+    return;
+  };
+
   return (
     <div>
-      <h2>Seating Chart</h2>
+      {/* <h2>Booking for {pickedMovie.movie}</h2>
+      <p>Date and Time: {TimeDisplay(pickedMovie.screeningTime)}</p> */}
       <table>
         <tbody>
           {s.seatingChart.map((row, rowIndex) => (
