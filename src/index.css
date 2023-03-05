@@ -20,6 +20,12 @@ input {
   color: rgb(111, 7, 7);
 }
 
+.movie {
+  margin: 5px;
+  padding: 5px;
+  background-color: rgb(142, 162, 204);
+}
+
 header {
   background-color: #eedcdc;
   padding: 0 20px;

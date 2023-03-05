@@ -40,13 +40,13 @@ export default function App() {
   useEffect(() => {
     fetchMovies();
     fetchScreeningsOverview();
+    fetchCategories();
   }, []);
 
   const fetchMovies = async () => {
     const response = await fetch("/api/movies");
     const data = await response.json();
     set("movies", data);
-    console.log(data[0]);
   };
   // {
   //+   "id": 1,
@@ -64,13 +64,23 @@ export default function App() {
     const response = await fetch("/api/screenings_overview");
     const data = await response.json();
     set("screening", data);
-    console.log(data[0]);
   };
   // {
   //   "screeningId": 1,
   //+  "screeningTime": "2023-05-01T16:00:00.000Z",
   //   "movie": "Crocodile Dundee",
   //+   "auditorium": "Stora Salongen"
+  // }
+
+  const fetchCategories = async () => {
+    const response = await fetch("/api/categories");
+    const data = await response.json();
+    set("fetchCategories", data);
+  };
+  // {
+  //   "id": 1,
+  //   "title": "Adventure",
+  //   "description": "This is the Adventure category."
   // }
 
   // merge the two arrays by id
@@ -89,8 +99,8 @@ export default function App() {
   return (
     <div className="App">
       <h1>Available Movies</h1>
-      {sortedItems.map(({ id, title, description, screeningTime, auditorium }) => (
-        <Movie key={id} title={title} description={description} screeningTime={screeningTime} auditorium={auditorium} />
+      {sortedItems.map(({ id, title, description, screeningTime, auditorium, screeningId }) => (
+        <Movie key={id} title={title} description={description} screeningTime={screeningTime} auditorium={auditorium} screeningId={screeningId} />
       ))}
     </div>
   );

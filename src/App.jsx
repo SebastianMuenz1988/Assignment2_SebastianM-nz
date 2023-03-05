@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 
-import MainMenu from "./MainMenu";
+import NavBar from "./NavBar";
 
 import StartPage from "./StartPage.jsx";
 import MovieList from "./MovieList";
@@ -14,7 +14,7 @@ export default function App() {
   return (
     <>
       <header>
-        <MainMenu />
+        <NavBar />
       </header>
       <main>
         <Routes>
