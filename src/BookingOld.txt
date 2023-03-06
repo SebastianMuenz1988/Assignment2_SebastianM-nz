@@ -1,0 +1,114 @@
+import React from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import Seat from "./Seat";
+
+export default function Booking() {
+  //Get screeningID from location object
+  const location = useLocation();
+  const screeningId = location.state?.screeningId;
+
+  if (!screeningId) {
+    return <div>No data found</div>;
+  }
+
+  const [s, setS] = useState({
+    bookings: [],
+    occupiedSeats: [],
+    occupiedSeatsView: [],
+  });
+
+  let copyOfS = { ...s };
+  const set = (key, value) => {
+    copyOfS[key] = value;
+    setS({ ...copyOfS });
+  };
+
+  // useEffect gets only triggerd once (hard page reload) because trigger is empty []
+  useEffect(() => {
+    fetchBookingsOverview();
+    fetchOccupiedSeats();
+    console.log("useEffect called!");
+  }, []);
+
+  // total price, the date and time, all the seat numbers and booking number
+
+  const fetchBookingsOverview = async () => {
+    const response = await fetch("/api/bookings_overview");
+    const data = await response.json();
+    set("bookings", data);
+  };
+  //   {
+  //   "email": "ddulanyb@yellowpages.com",
+  //   "bookingNumber": "JKB018",
+  //   "seats": "14, 15",
+  //   "ticketTypes": "Child, Senior",
+  //   "screeningId": 1,
+  //   "screeningTime": "2023-05-01T16:00:00.000Z",
+  //   "movie": "Crocodile Dundee",
+  //   "auditorium": "Stora Salongen"
+  // }
+
+  const fetchOccupiedSeats = async () => {
+    const response = await fetch("/api/occupied_seats");
+    const data = await response.json();
+    set("occupiedSeats", data);
+    let occupiedSeatsArray = data[screeningId].occupiedSeats.split(",").map(Number);
+    set("occupiedSeatsView", occupiedSeatsArray);
+    console.log("occupiedSeatsArray: ", occupiedSeatsArray);
+  };
+
+  //   {
+  //   "screeningId": 1,
+  //   "screeningTime": "2023-05-01T16:00:00.000Z",
+  //   "movie": "Crocodile Dundee",
+  //   "auditorium": "Stora Salongen",
+  //   "occupiedSeats": "2, 3, 12, 14, 15, 23, 24, 25, 26, 27, 50, 51, 52, 53, 54, 55, 58, 59, 66, 67, 68, 69, 70, 71, 76, 77",
+  //   "occupied": 26,
+  //   "total": 81,
+  //   "occupiedPercent": "32"
+  // }
+
+  const pickedMovie = s.occupiedSeats.find((obj) => obj.screeningId === screeningId) || [];
+
+  // Create a 2D array of seats
+  const seats = [];
+  for (let i = 0; i < 10; i++) {
+    const row = [];
+    for (let j = 10; j >= 1; j--) {
+      row.push(i * 10 + j);
+    }
+    seats.push(row);
+  }
+  console.log(seats);
+
+  // Define a function to check if a seat is occupied
+  const isOccupied = (seatNumber) => {
+    return s.occupiedSeatsView.includes(seatNumber);
+  };
+
+  // Define a function to handle seat selection
+  const handleSeatSelect = (seatNumber) => {
+    // Update the list of occupied seats
+    set("occupiedSeatsView", [...s.occupiedSeatsView, seatNumber]);
+    console.log(seatNumber);
+  };
+
+  // Render the seat table
+  return (
+    <div>
+      <h2>Seat Booking</h2>
+      <table>
+        <tbody>
+          {seats.map((row, rowIndex) => (
+            <tr key={rowIndex}>
+              {row.map((seatNumber, seatIndex) => (
+                <td key={seatIndex}>{isOccupied(seatNumber) ? <button disabled>X</button> : <button onClick={() => handleSeatSelect(seatNumber)}>{seatNumber}</button>}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}

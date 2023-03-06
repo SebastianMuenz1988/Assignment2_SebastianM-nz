@@ -46,3 +46,38 @@ header nav a:first-of-type {
 header nav a.active {
   color: rgb(33, 150, 33);
 }
+
+/* -------------------------- */
+
+.seat {
+  width: 30px;
+  height: 30px;
+  border: 1px solid #ccc;
+  margin: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.available {
+  background-color: #fff;
+}
+
+.occupied {
+  background-color: #aaa;
+}
+
+.selected {
+  background-color: #f00;
+}
+
+.selectable {
+  border-color: #0f0;
+}
+
+.seat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 40px);
+  grid-gap: 5px;
+}

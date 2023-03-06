@@ -87,7 +87,7 @@ export default function App() {
     const object2 = s.screening.find((obj) => obj.screeningId === object1.id);
     return { ...object1, ...object2 };
   });
-
+  //should i make a state vaiable for merged objects???
   const sortedItems = [...mergedObjects].sort((a, b) => {
     const dateA = new Date(a.screeningTime);
     const dateB = new Date(b.screeningTime);
