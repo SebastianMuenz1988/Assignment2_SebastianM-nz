@@ -15,14 +15,26 @@ export default function SeatMap({ seats }) {
   };
 
   return (
-    <div className="seat-map">
-      {seats.map(
-        (
-          seat //Map through seats array and pass every seat object to my Seat component
-        ) => (
-          <Seat seat={seat} onSelect={handleSeatSelect} />
-        )
-      )}
-    </div>
+    <>
+      <div className="seat-map">
+        {seats.map((seat) => (
+          <Seat //
+            key={seat.id}
+            id={seat.id}
+            occupied={seat.occupied}
+            selected={seat.selected}
+            onSelect={handleSeatSelect}
+          />
+        ))}
+      </div>
+      <div>
+        <h2>Selected Seats</h2>
+        <ul>
+          {selectedSeats.map((seatId) => (
+            <li key={seatId}>{`Seat ${seatId}`}</li>
+          ))}
+        </ul>
+      </div>
+    </>
   );
 }

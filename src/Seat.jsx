@@ -1,14 +1,15 @@
 import React from "react";
 import { useState } from "react";
 
-export default function Seat({ seat }) {
+export default function Seat({ id, occupied, selected, onSelect, type }) {
   //({ id, occupied, selected, onSelect })
-  const [isOccupied, setIsOccupied] = useState(occupied);
+  // const [isOccupied, setIsOccupied] = useState(occupied);
   const [isSelected, setIsSelected] = useState(selected);
 
   //do i have to do this in seat map or booking??? and just pass this funktion along?
   const handleClick = () => {
-    if (!isOccupied) {
+    console.log(occupied);
+    if (!occupied) {
       setIsSelected(!isSelected);
       onSelect(id, !isSelected);
     }
@@ -16,7 +17,7 @@ export default function Seat({ seat }) {
 
   return (
     <div //
-      className={`seat ${isOccupied ? "occupied" : ""} ${isSelected ? "selected" : ""}`}
+      className={`seat ${occupied ? "occupied" : ""} ${isSelected ? "selected" : ""}`}
       onClick={handleClick}
     ></div>
   );

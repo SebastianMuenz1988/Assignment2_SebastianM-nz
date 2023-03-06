@@ -7,7 +7,9 @@ export default function Booking() {
   //Get screeningID from location object
   const location = useLocation();
   const screeningId = location.state?.screeningId;
+  console.log("screeningId", screeningId);
   let pickedAuditorum = "";
+  let pickedMovie = "";
 
   if (!screeningId) {
     return <div>No data found</div>;
@@ -27,7 +29,6 @@ export default function Booking() {
   // useEffect gets only triggerd once (hard page reload) because trigger is empty []
   useEffect(() => {
     fetchOccupiedSeats();
-    fetchSeats();
     console.log("useEffect called!");
   }, []);
 
@@ -39,8 +40,18 @@ export default function Booking() {
     let occupiedSeatsArray = data[screeningId].occupiedSeats.split(",").map(Number);
     set("occupiedSeatsView", occupiedSeatsArray);
     console.log("occupiedSeatsArray: ", occupiedSeatsArray);
-  };
 
+    // get the selected movie and filter
+    pickedMovie = data.find((obj) => obj.screeningId === screeningId) || [];
+    if (pickedMovie.auditorium === "Lilla Salongen") {
+      pickedAuditorum = 2;
+    }
+    if (pickedMovie.auditorium === "Stora Salongen") {
+      pickedAuditorum = 1;
+    }
+
+    fetchSeats();
+  };
   //   {
   //   "screeningId": 1,
   //   "screeningTime": "2023-05-01T16:00:00.000Z",
@@ -52,39 +63,31 @@ export default function Booking() {
   //   "occupiedPercent": "32"
   // }
 
-  const pickedMovie = s.occupiedSeats.find((obj) => obj.screeningId === screeningId) || [];
-  if (pickedMovie.auditorium === "Lilla Salongen") {
-    pickedAuditorum = 2;
-  }
-  if (pickedMovie.auditorium === "Stora Salongen") {
-    pickedAuditorum = 1;
-  }
   //////////// fetchSeats
   const fetchSeats = async () => {
     const response = await fetch("/api/seats");
     const seats = await response.json();
     console.log("seats: ", seats);
     //filter all seats by picked auditorium...
-    const filteredSeats = seats.filter((seat) => seat.auditorium === pickedAuditorum);
-    console.log("filteredSeats: ", filteredSeats);
-    console.log("filteredSeats: ", filteredSeats);
+    const filteredSeats = seats.filter((seat) => {
+      return seat.auditoriumId === pickedAuditorum;
+    });
 
     set("seats", filteredSeats);
     console.log("filteredSeats: ", filteredSeats);
-    modifySeats();
-    console.log("modifySeats s.seats: ", s.seats);
+
+    //extend seats objects depending on occupiedSeats
+    const extendedSeats = filteredSeats.map((obj) => {
+      if (pickedMovie.occupiedSeats.includes(obj.rowNumber * obj.seatNumber)) {
+        return (obj = { ...obj, occupied: true, selected: false });
+      }
+      return (obj = { ...obj, occupied: false, selected: false });
+    });
+    set("seats", extendedSeats);
+    console.log(extendedSeats);
   };
 
-  const modifySeats = () => {
-    const copySeats = [...s.seats]; // always make a copy if you wanna change sth
-    copySeats.map((obj) => {
-      if (pickedMovie.occupiedSeats.includes(obj.rowNumber * obj.seatNumber)) {
-        obj = { ...obj, occupied: true, selected: false };
-      }
-      obj = { ...obj, occupied: false, selected: false };
-    });
-    set("seats", copySeats);
-  };
+  // const modifySeats = () => {
 
   // {
   //   "id": 1,
@@ -95,8 +98,8 @@ export default function Booking() {
 
   // Render the seat table
   return (
-    <div>
+    <>
       <SeatMap seats={s.seats} />
-    </div>
+    </>
   );
 }

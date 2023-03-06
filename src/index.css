@@ -76,7 +76,7 @@ header nav a.active {
   border-color: #0f0;
 }
 
-.seat-grid {
+.seat-map {
   display: grid;
   grid-template-columns: repeat(auto-fill, 40px);
   grid-gap: 5px;
