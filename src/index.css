@@ -78,6 +78,8 @@ header nav a.active {
 
 .seat-map {
   display: grid;
+  direction: rtl;
+  justify-content: flex-start;
   grid-template-columns: repeat(auto-fill, 40px);
   grid-gap: 5px;
 }

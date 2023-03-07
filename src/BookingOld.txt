@@ -112,3 +112,95 @@ export default function Booking() {
     </div>
   );
 }
+
+
+
+----------------------------------------------
+
+ //oder soll ich alles aus dem occupied nehmen und ein eigenes generieren?
+
+  // //////////// createSeatArray
+  // const createSeatObjects = (pickedMovie) => {
+  //   const seats = [];
+
+  //   for (let i = 1; i <= pickedMovie.total; i++) {
+  //     const occupiedSeatsArray = data[screeningId].occupiedSeats.split(",").map(Number);
+  //     const seat = {
+  //       id: i,
+  //       occupied: occupiedSeatsArray.includes(i),
+  //       selected: false,
+  //       seatType: null,
+  //     };
+  //     seats.push(seat);
+  //   }
+  //   set("pickedMoiveSeats", seats);
+  //   console.log("pickedMoiveSeats", pickedMoiveSeats);
+  // };
+
+  //////////// fetchSeats
+  // const fetchSeats = async () => {
+  //   const response = await fetch("/api/seats");
+  //   const seats = await response.json();
+  //   console.log("seats: ", seats);
+  //   //filter all seats by picked auditorium...
+  //   const filteredSeats = seats.filter((seat) => {
+  //     return seat.auditoriumId === pickedAuditorum;
+  //   });
+
+  //   set("seats", filteredSeats);
+  //   console.log("filteredSeats: ", filteredSeats);
+
+  //   //extend seats objects depending on occupiedSeats
+  //   const extendedSeats = filteredSeats.map((obj) => {
+  //     if (pickedMovie.occupiedSeats.includes(obj.rowNumber * obj.seatNumber)) {
+  //       return (obj = { ...obj, occupied: true, selected: false, seatType: "Adult" });
+  //     }
+  //     return (obj = { ...obj, occupied: false, selected: false, seatType: "Adult" });
+  //   });
+  //   set("seats", extendedSeats);
+  //   console.log(extendedSeats);
+  // };
+
+  // const modifySeats = () => {
+
+  // {
+  //   "id": 1,
+  //   "rowNumber": 1,
+  //   "seatNumber": 1,
+  //   "auditoriumId": 1
+  // },
+
+  // Render the seat table
+
+
+  ------------------------------------------
+    //
+  // descructure seats from props
+  // const [selectedSeats, setSelectedSeats] = useState([]);
+
+  // const handleSeatSelect = (id, isSelected) => {
+  //   if (isSelected) {
+  //     setSelectedSeats([...selectedSeats, id]);
+  //   } else {
+  //     setSelectedSeats(selectedSeats.filter((seat) => seat !== id));
+  //   }
+  // };
+
+  // const handleTypeChange = (event) => {
+  //   setSeatType(event.target.value);
+  // };
+
+  //I need a extra function!!! Can not directly call toggleSelect!s
+
+
+    //
+  // const [isOccupied, setIsOccupied] = useState(occupied);
+  // const [isSelected, setIsSelected] = useState(selected);
+
+  // //do i have to do this in seat map or booking??? and just pass this funktion along?
+  // const handleClick = () => {
+  //   if (!occupied) {
+  //     setIsSelected(!isSelected);
+  //     onSelect(id, !isSelected);
+  //   }
+  // };

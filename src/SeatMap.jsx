@@ -2,18 +2,11 @@ import React from "react";
 import { useState } from "react";
 import Seat from "./Seat";
 
-export default function SeatMap({ seats }) {
-  // descructure seats from props
-  const [selectedSeats, setSelectedSeats] = useState([]);
-
-  const handleSeatSelect = (id, isSelected) => {
-    if (isSelected) {
-      setSelectedSeats([...selectedSeats, id]);
-    } else {
-      setSelectedSeats(selectedSeats.filter((seat) => seat !== id));
-    }
-  };
-
+export default function SeatMap({
+  //
+  seats,
+  toggleSelect,
+}) {
   return (
     <>
       <div className="seat-map">
@@ -21,20 +14,15 @@ export default function SeatMap({ seats }) {
           <Seat //
             key={seat.id}
             id={seat.id}
-            occupied={seat.occupied}
-            selected={seat.selected}
-            onSelect={handleSeatSelect}
+            seat={seat}
+            toggleSelect={toggleSelect}
           />
         ))}
       </div>
-      <div>
-        <h2>Selected Seats</h2>
-        <ul>
-          {selectedSeats.map((seatId) => (
-            <li key={seatId}>{`Seat ${seatId}`}</li>
-          ))}
-        </ul>
-      </div>
     </>
   );
+
+  //   return seats.map((seat) => {
+  //     return <Seat key={seat.id} id={seat.id} seat={seat} toggleSelect={toggleSelect} />;
+  //   });
 }

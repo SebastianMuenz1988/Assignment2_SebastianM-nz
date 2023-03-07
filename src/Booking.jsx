@@ -8,8 +8,8 @@ export default function Booking() {
   const location = useLocation();
   const screeningId = location.state?.screeningId;
   console.log("screeningId", screeningId);
-  let pickedAuditorum = "";
   let pickedMovie = "";
+  let total = "";
 
   if (!screeningId) {
     return <div>No data found</div>;
@@ -18,6 +18,7 @@ export default function Booking() {
   const [s, setS] = useState({
     occupiedSeats: [],
     seats: [],
+    selectedSeats: [],
   });
 
   let copyOfS = { ...s };
@@ -26,7 +27,6 @@ export default function Booking() {
     setS({ ...copyOfS });
   };
 
-  // useEffect gets only triggerd once (hard page reload) because trigger is empty []
   useEffect(() => {
     fetchOccupiedSeats();
     console.log("useEffect called!");
@@ -34,72 +34,144 @@ export default function Booking() {
 
   ////////////  fetchOccupiedSeats
   const fetchOccupiedSeats = async () => {
+    console.log("call fetchOccupiedSeats");
     const response = await fetch("/api/occupied_seats");
     const data = await response.json();
     set("occupiedSeats", data);
     let occupiedSeatsArray = data[screeningId].occupiedSeats.split(",").map(Number);
     set("occupiedSeatsView", occupiedSeatsArray);
-    console.log("occupiedSeatsArray: ", occupiedSeatsArray);
+    //   {
+    //   "screeningId": 1,
+    //   "screeningTime": "2023-05-01T16:00:00.000Z",
+    //   "movie": "Crocodile Dundee",
+    //   "auditorium": "Stora Salongen",
+    //   "occupiedSeats": "2, 3, 12, 14, 15, ..., 76, 77",
+    //   "occupied": 26,
+    //   "total": 81,
+    //   "occupiedPercent": "32"
+    // }
 
-    // get the selected movie and filter
+    // get the selected movie
     pickedMovie = data.find((obj) => obj.screeningId === screeningId) || [];
-    if (pickedMovie.auditorium === "Lilla Salongen") {
-      pickedAuditorum = 2;
+
+    // create a new seat array from pickedMoive Object
+    const seats = [];
+    for (let i = 0; i <= pickedMovie.total; i++) {
+      const occupiedSeatsArray = data[screeningId].occupiedSeats.split(",").map(Number);
+      const seat = {
+        id: i,
+        occupied: occupiedSeatsArray.includes(i),
+        selected: false,
+        seatType: "Adult",
+      };
+      seats.push(seat);
     }
-    if (pickedMovie.auditorium === "Stora Salongen") {
-      pickedAuditorum = 1;
-    }
-
-    fetchSeats();
-  };
-  //   {
-  //   "screeningId": 1,
-  //   "screeningTime": "2023-05-01T16:00:00.000Z",
-  //   "movie": "Crocodile Dundee",
-  //   "auditorium": "Stora Salongen",
-  //   "occupiedSeats": "2, 3, 12, 14, 15, 23, 24, 25, 26, 27, 50, 51, 52, 53, 54, 55, 58, 59, 66, 67, 68, 69, 70, 71, 76, 77",
-  //   "occupied": 26,
-  //   "total": 81,
-  //   "occupiedPercent": "32"
-  // }
-
-  //////////// fetchSeats
-  const fetchSeats = async () => {
-    const response = await fetch("/api/seats");
-    const seats = await response.json();
-    console.log("seats: ", seats);
-    //filter all seats by picked auditorium...
-    const filteredSeats = seats.filter((seat) => {
-      return seat.auditoriumId === pickedAuditorum;
-    });
-
-    set("seats", filteredSeats);
-    console.log("filteredSeats: ", filteredSeats);
-
-    //extend seats objects depending on occupiedSeats
-    const extendedSeats = filteredSeats.map((obj) => {
-      if (pickedMovie.occupiedSeats.includes(obj.rowNumber * obj.seatNumber)) {
-        return (obj = { ...obj, occupied: true, selected: false });
-      }
-      return (obj = { ...obj, occupied: false, selected: false });
-    });
-    set("seats", extendedSeats);
-    console.log(extendedSeats);
+    set("seats", seats);
   };
 
-  // const modifySeats = () => {
+  ////////////  functions
 
-  // {
-  //   "id": 1,
-  //   "rowNumber": 1,
-  //   "seatNumber": 1,
-  //   "auditoriumId": 1
-  // },
+  const setSeatType = (event) => {
+    console.log("call setSeatType");
+    const selectedType = event.target.value;
+    const id = event.target.id;
+    const copySeats = [...s.seats]; // always make a copy if you wanna change sth
+    const selectedSeat = copySeats.find((seat) => {
+      return seat.id.toString() === id;
+    });
 
-  // Render the seat table
+    selectedSeat.seatType = selectedType; //
+    // setTodos(s.seats);
+    set("seats", copySeats);
+    console.log(copySeats);
+
+    updateSelected();
+  };
+
+  function toggleSelect(id) {
+    console.log("call toggleSelect");
+    const copySeats = [...s.seats]; // always make a copy if you wanna change sth
+    const seat = copySeats.find((seat) => seat.id === id); // find object
+    if (!seat.occupied) seat.selected = !seat.selected; //
+    // setTodos(s.seats);
+    set("seats", copySeats);
+
+    updateSelected();
+  }
+
+  function updateSelected() {
+    console.log("call updateSelected");
+    
+    const selectedSeats = s.seats.filter((seat) => seat.selected);
+    // console.log("selectedSeats", selectedSeats[0].id);
+    const receipt = [];
+
+    for (let i = 0; i < selectedSeats.length; i++) {
+      const seat = {
+        id: selectedSeats[i].id,
+        seatType: selectedSeats[i].seatType,
+        price: getPrice(selectedSeats[i].id),
+      };
+      receipt.push(seat);
+      set("selectedSeats", receipt);
+    }
+    getTotal();
+  }
+
+  // !! Why can't I select pickedMovie??
+
+  const getPrice = (id) => {
+    console.log("call getPrice");
+    // const id = event.target.id;
+    if (s.seats[id].seatType === "Adult") {
+      return 110;
+    }
+    if (s.seats[id].seatType === "Child") {
+      return 75;
+    }
+    if (s.seats[id].seatType === "Senior") {
+      return 85;
+    }
+  };
+
+  const getTotal = () => {
+    console.log("call getTotal");
+    console.log(selectedSeats);
+    total = 0;
+    for (let i = 0; i < s.selectedSeats.length; i++) {
+      total += s.selectedSeats[i].price;
+    }
+    // total = s.selectedSeats.reduce((acc, obj) => acc + obj.price, 0);
+    console.log("total: ", total);
+  };
+
   return (
     <>
-      <SeatMap seats={s.seats} />
+      <h1>You picked: </h1>
+      <p>Please, select you seat!</p>
+      <SeatMap //
+        seats={s.seats}
+        toggleSelect={toggleSelect}
+        setSeatType={setSeatType}
+      />
+      <div>
+        <h2>Selected Seats</h2>
+        <ul>
+          {s.selectedSeats.map((selectedSeat) => (
+            <li key={selectedSeat.id}>
+              {`Seat No:  ${selectedSeat.id} `}
+              <select id={selectedSeat.id} value={s.seats[selectedSeat.id].seatType} onChange={setSeatType}>
+                <option>Child</option>
+                <option>Adult</option>
+                <option>Senior</option>
+              </select>
+              <p id={selectedSeat.id}>Price: {getPrice(selectedSeat.id)}</p>
+            </li>
+          ))}
+        </ul>
+        <p>Total: {total}</p>
+        <button>Take reservation</button>
+      </div>
     </>
   );
 }
