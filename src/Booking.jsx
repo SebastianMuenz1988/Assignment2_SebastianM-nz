@@ -9,6 +9,7 @@ export default function Booking() {
   const screeningId = location.state?.screeningId;
   console.log("screeningId", screeningId);
   let pickedMovie = "";
+
   let total = "";
 
   if (!screeningId) {
@@ -19,6 +20,7 @@ export default function Booking() {
     occupiedSeats: [],
     seats: [],
     selectedSeats: [],
+    total: 0,
   });
 
   let copyOfS = { ...s };
@@ -31,6 +33,10 @@ export default function Booking() {
     fetchOccupiedSeats();
     console.log("useEffect called!");
   }, []);
+
+  // useEffect(() => {
+  //   getTotal();
+  // }, [s]);
 
   ////////////  fetchOccupiedSeats
   const fetchOccupiedSeats = async () => {
@@ -51,8 +57,19 @@ export default function Booking() {
     //   "occupiedPercent": "32"
     // }
 
-    // get the selected movie
+    // get the selected movie and auditorium
     pickedMovie = data.find((obj) => obj.screeningId === screeningId) || [];
+
+    // console.log("pickedMovie.auditorium booking", pickedMovie.auditorium);
+    // seatsPerRow = pickedMovie.auditorium === "Stora Salongen" ? "8" : "6";
+    // console.log("seatsPerRow booking", seatsPerRow);
+
+    // if (pickedMovie.auditorium === "Stora Salongen") {
+    //   seatsPerRow = 8;
+    // }
+    // if (pickedMovie.auditorium === "Lilla Salongen") {
+    //   seatsPerRow = 6; //Auditorium 2 =6 seats per row
+    // }
 
     // create a new seat array from pickedMoive Object
     const seats = [];
@@ -70,6 +87,23 @@ export default function Booking() {
   };
 
   ////////////  functions
+
+  // const getSeatsPerRow = () => {
+  //   console.log(pickedMovie);
+  //   console.log("pickedMovie", pickedMovie.auditorium);
+  //   if (pickedMovie.auditorium === "Stora Salongen") {
+  //     return 8; //Auditorium 1 = 8 seats per row
+  //   }
+  //   if (pickedMovie.auditorium === "Lilla Salongen") {
+  //     return 6; //Auditorium 2 =6 seats per row
+  //   }
+  // };
+
+  const seatPerRowF = () => {
+    let pM = s.occupiedSeats.find((obj) => obj.screeningId === screeningId) || [];
+    console.log("pM.auditorium booking", pM.auditorium);
+    return pM.auditorium === "Stora Salongen" ? "8" : "6";
+  };
 
   const setSeatType = (event) => {
     console.log("call setSeatType");
@@ -99,23 +133,23 @@ export default function Booking() {
     updateSelected();
   }
 
-  function updateSelected() {
+  async function updateSelected() {
     console.log("call updateSelected");
-    
-    const selectedSeats = s.seats.filter((seat) => seat.selected);
-    // console.log("selectedSeats", selectedSeats[0].id);
-    const receipt = [];
 
-    for (let i = 0; i < selectedSeats.length; i++) {
+    const selectedFromSeats = s.seats.filter((seat) => seat.selected);
+    // console.log("selectedFromSeats", selectedFromSeats[0].id);
+    const selectedSeats = [];
+
+    for (let i = 0; i < selectedFromSeats.length; i++) {
       const seat = {
-        id: selectedSeats[i].id,
-        seatType: selectedSeats[i].seatType,
-        price: getPrice(selectedSeats[i].id),
+        id: selectedFromSeats[i].id,
+        seatType: selectedFromSeats[i].seatType,
+        price: getPrice(selectedFromSeats[i].id),
       };
-      receipt.push(seat);
-      set("selectedSeats", receipt);
+      selectedSeats.push(seat);
     }
-    getTotal();
+    set("selectedSeats", selectedSeats);
+    getTotal(selectedSeats); //pass on receipt because selected seat
   }
 
   // !! Why can't I select pickedMovie??
@@ -134,15 +168,16 @@ export default function Booking() {
     }
   };
 
-  const getTotal = () => {
+  const getTotal = (receipt) => {
     console.log("call getTotal");
-    console.log(selectedSeats);
+    console.log("s.selectedSeats: ", receipt);
     total = 0;
-    for (let i = 0; i < s.selectedSeats.length; i++) {
-      total += s.selectedSeats[i].price;
+    for (let i = 0; i < receipt.length; i++) {
+      total += receipt[i].price;
     }
     // total = s.selectedSeats.reduce((acc, obj) => acc + obj.price, 0);
     console.log("total: ", total);
+    set("total", total);
   };
 
   return (
@@ -153,6 +188,7 @@ export default function Booking() {
         seats={s.seats}
         toggleSelect={toggleSelect}
         setSeatType={setSeatType}
+        seatsPerRow={seatPerRowF()}
       />
       <div>
         <h2>Selected Seats</h2>
@@ -169,7 +205,7 @@ export default function Booking() {
             </li>
           ))}
         </ul>
-        <p>Total: {total}</p>
+        <p>Total: {s.total}</p>
         <button>Take reservation</button>
       </div>
     </>
