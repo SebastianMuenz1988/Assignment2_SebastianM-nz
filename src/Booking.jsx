@@ -126,6 +126,24 @@ export default function Booking() {
     console.log("call toggleSelect");
     const copySeats = [...s.seats]; // always make a copy if you wanna change sth
     const seat = copySeats.find((seat) => seat.id === id); // find object
+    console.log("seat.id: ", seat.id);
+
+    if (
+      !s.selectedSeats.some((sseat) => sseat.id == seat.id) && //not already selected
+      s.selectedSeats.length != 0 && //not the thirst one
+      !s.selectedSeats.some((sseat) => sseat.id + 1 == seat.id) && // not adjacent (right)
+      !s.selectedSeats.some((sseat) => sseat.id - 1 == seat.id) // not adjacent (left)
+    ) {
+      console.log("Only adjacent seats!");
+      return;
+    }
+
+    if (
+      (seat.id % 8 == 7 && s.selectedSeats.some((sseat) => sseat.id % 8 == 0)) || //
+      (seat.id % 8 == 0 && s.selectedSeats.some((sseat) => sseat.id % 8 == 7))
+    )
+      return;
+
     if (!seat.occupied) seat.selected = !seat.selected; //
     // setTodos(s.seats);
     set("seats", copySeats);

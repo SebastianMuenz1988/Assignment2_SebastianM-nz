@@ -22,10 +22,13 @@ export default function Seat({
   //     {id}
   //   </div>
   // );
+  const getWidth = () => (18 / 8) * 100;
+
   return (
     <Col //
       key={seat.id}
-      // xs={seatsPerRow === "8" ? 1 : 2}
+      style={{ width: 100 / seatsPerRow + "%" }}
+      xs={seatsPerRow === "8" ? 1 : 2}
       className={`seat ${seat.occupied ? "occupied" : ""} ${seat.selected ? "selected" : ""}`}
       onClick={handleSelectClick}
     >
