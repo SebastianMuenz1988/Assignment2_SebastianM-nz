@@ -1,6 +1,5 @@
 import React from "react";
 import { Col } from "react-bootstrap";
-import "bootstrap/dist/css/bootstrap.min.css";
 
 export default function Seat({
   //

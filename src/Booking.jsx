@@ -7,8 +7,6 @@ import { Link } from "react-router-dom";
 import { Container, Button, Form, ListGroup } from "react-bootstrap";
 import { Row, Col } from "react-bootstrap";
 import { Card, Badge } from "react-bootstrap";
-import "./booking.css";
-
 export default function Booking() {
   // read the id param from the url
   const { id: screeningId } = useParams();
@@ -115,7 +113,7 @@ export default function Booking() {
   };
 
   // Functions that I pass to Seats
-  const seatPerRow = () => {
+  const seatsPerRow = () => {
     // let pM = pickedMovie || [];
     console.log("pM.auditorium booking", pickedMovie.auditorium);
     return pickedMovie.auditorium === "Stora Salongen" ? "8" : "6";
@@ -151,10 +149,20 @@ export default function Booking() {
     }
 
     if (
-      (seat.id % 8 == 7 && selectedSeats.some((sseat) => sseat.id % 8 == 0)) || //
-      (seat.id % 8 == 0 && selectedSeats.some((sseat) => sseat.id % 8 == 7))
-    )
+      selectedSeats.some((sseat) => sseat.id + 1 == seat.id) && //  adjacent (right)
+      selectedSeats.some((sseat) => sseat.id - 1 == seat.id) //  adjacent (left)
+    ) {
+      console.log("Not allowed! First deselct the outer seats!");
       return;
+    }
+
+    if (
+      (seat.id % seatsPerRow() == seatsPerRow() - 1 && selectedSeats.some((sseat) => sseat.id % seatsPerRow() == 0)) || //
+      (seat.id % seatsPerRow() == 0 && selectedSeats.some((sseat) => sseat.id % seatsPerRow() == seatsPerRow() - 1))
+    ) {
+      console.log("Only in the same row!");
+      return;
+    }
 
     if (!seat.occupied) seat.selected = !seat.selected; //
 
@@ -176,6 +184,11 @@ export default function Booking() {
     }
   };
 
+  function GetTimeDisplay(timeCode) {
+    const date = new Date(timeCode);
+    return date.toLocaleString();
+  }
+
   console.log("selectedSeats", selectedSeats);
   console.log("total", total);
 
@@ -186,10 +199,27 @@ export default function Booking() {
         <Col md={8}>
           <Card className="mb-4">
             <Card.Header>
-              <h2>You picked:</h2>
+              <h2>You picked the movie: {pickedMovie.movie}</h2>
             </Card.Header>
             <Card.Body>
-              <SeatMap seats={seats} toggleSelect={toggleSelect} setSeatType={setSeatType} seatsPerRow={seatPerRow()} />
+              <ul>
+                <li>
+                  <strong>When:</strong> {GetTimeDisplay(pickedMovie.screeningTime)}
+                </li>
+                <li>
+                  <strong>Where:</strong> Auditorium {pickedMovie.auditorium}
+                </li>
+              </ul>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col md={8}>
+          <Card className="mb-4">
+            <Card.Header>
+              <h2>Seats in the Auditorium {pickedMovie.auditorium}</h2>
+            </Card.Header>
+            <Card.Body>
+              <SeatMap seats={seats} toggleSelect={toggleSelect} setSeatType={setSeatType} seatsPerRow={seatsPerRow()} />
             </Card.Body>
           </Card>
         </Col>
@@ -216,12 +246,14 @@ export default function Booking() {
               </ul>
               <hr />
               <h4 className="text-center mb-4">Total: {total}</h4>
-              <div className="text-center">
-                <Button as={Link} to="/receipt" variant="primary" className="w-100">
-                  Next Step
-                </Button>
-              </div>
             </Card.Body>
+            <Card.Footer>
+              {selectedSeats.length > 0 && (
+                <Button as={Link} to="/receipt" state={{ selectedSeats, total }} variant="primary" className="w-100">
+                  Book Now!
+                </Button>
+              )}
+            </Card.Footer>
           </Card>
         </Col>
       </Row>

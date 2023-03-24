@@ -1,6 +1,5 @@
 import { Nav, Navbar } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
-import "./style.css";
 
 export default function MainMenu() {
   return (
@@ -10,17 +9,17 @@ export default function MainMenu() {
         <Nav className="mr-auto">
           <Nav.Item>
             <NavLink className="nav-link" exact="true" to="/">
-              Start
+              <h4>Start</h4>
             </NavLink>
           </Nav.Item>
           <Nav.Item>
             <NavLink className="nav-link" to="/movies">
-              Movies
+              <h4>Movies</h4>
             </NavLink>
           </Nav.Item>
           <Nav.Item>
             <NavLink className="nav-link" to="/about-us">
-              About us
+              <h4>About us</h4>
             </NavLink>
           </Nav.Item>
         </Nav>

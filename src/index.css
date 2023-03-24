@@ -60,7 +60,6 @@ input {
 }
 .seat:hover {
   transform: scale(1.1);
-  /* background-color: rgba(250, 91, 91, 0.2); */
 }
 
 .available {
@@ -82,12 +81,73 @@ input {
   grid-template-columns: repeat(auto-fill, 40px);
   grid-gap: 5px;
 }
+/* -------------movie-------------------------- */
 
+.movie-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 40px; /* add some spacing between the cards */
+}
+
+.movie-card {
+  display: flex;
+  flex-direction: column;
+  width: 300px; /* adjust this value as needed */
+  margin-bottom: 40px; /* add some space at the bottom of each card */
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2); /* add a subtle box shadow */
+  border-radius: 5px; /* round the corners of the card */
+  overflow: hidden; /* clip any content that overflows the card */
+}
+
+.card-img-top {
+  width: 200px;
+  max-height: 300px;
+  object-fit: contain;
+  object-position: center;
+  margin: 10px 0;
+}
+
+.movie-card .card-body {
+  padding: 20px; /* add some padding to the card body */
+  flex-grow: 1;
+}
+
+.movie-card .movie-title {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.movie-card .movie-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+
+.movie-card .movie-categories {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.movie-card .movie-category {
+  margin-right: 5px;
+  margin-bottom: 5px;
+  font-size: 16px;
+  text-transform: uppercase; /* convert category names to uppercase */
+  font-weight: 600; /* add some boldness to the category names */
+  padding: 6px 12px; /* add some padding to the category badges */
+  border-radius: 50px; /* make the category badges circular */
+  background-color: #007bff; /* use a blue background color for the badges */
+  color: #fff; /* set the text color of the badges to white */
+}
 /* ----------booking-------------- */
 .Container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
+  background-color: #c41616;
 }
 
 .text-center {

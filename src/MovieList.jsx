@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 // import our Movie component
 import Movie from "./Movie";
 import { Dropdown, DropdownButton, Row, Col } from "react-bootstrap";
-import "./style.css";
 
 // It's important to note that calling the update function does not
 // immediately update the state variable. Instead, React will queue up
@@ -121,20 +120,20 @@ export default function App() {
 
   return (
     <div className="App">
+      <Row className="Heading-row">
+        <Col>
+          <h1>The Screenings:</h1>
+        </Col>
+      </Row>
       <Row>
         <Col>
-          <DropdownButton id="dropdown-basic-button" title="Select Value" onSelect={handleDropdownChange}>
+          <DropdownButton id="categoryDropDown" title="Select Category" onSelect={handleDropdownChange}>
             {categories.map((categorie) => (
-              <Dropdown.Item key={categorie.title} eventKey={categorie.title}>
+              <Dropdown.Item id="categoryDropDownItem" key={categorie.title} eventKey={categorie.title}>
                 {categorie.title}
               </Dropdown.Item>
             ))}
           </DropdownButton>
-        </Col>
-      </Row>
-      <Row className="Heading-row">
-        <Col>
-          <h1>The Screenings:</h1>
         </Col>
       </Row>
       {uniqueDates.map((date) => (
@@ -154,7 +153,7 @@ export default function App() {
 
                 if (!categoryFilter || movie.description.categories.includes(categoryFilter)) {
                   return (
-                    <Col className="movie-col" xs={12} sm={6} md={4} lg={3} key={screening.screeningId}>
+                    <Col className="movie-col" xs={12} sm={6} md={6} lg={4} key={screening.screeningId}>
                       <Movie screening={screening} movie={movie} />
                     </Col>
                   );
@@ -166,46 +165,4 @@ export default function App() {
       ))}
     </div>
   );
-
-  // if (movies === undefined) {
-  //   return <div className="loading">loading</div>;
-  // } else {
-  //   return (
-  //     <div className="App">
-  //       <DropdownButton id="dropdown-basic-button" title="Select Value" onSelect={handleDropdownChange}>
-  //         {categories.map((categorie) => (
-  //           <Dropdown.Item key={categorie.title} eventKey={categorie.title}>
-  //             {categorie.title}
-  //           </Dropdown.Item>
-  //         ))}
-  //       </DropdownButton>
-  //       <h1>screenings</h1>
-  //       {uniqueDates.map((date) => (
-  //         <div key={date}>
-  //           <h1>
-  //             {getWeekday(date)} {date}
-  //           </h1>
-
-  //           {screenings
-  //             .filter((obj) => date.includes(obj.formattedDate))
-  //             .map((screening) => {
-  //               const movie = findMovie(screening.movie);
-  //               // console.log("movie.description.categories", movie.description.categories);
-  //               // console.log("categoryFilter", categoryFilter);
-  //               if (!categoryFilter || movie.description.categories.includes(categoryFilter)) {
-  //                 return (
-  //                   <Movie //
-  //                     key={screening.screeningId}
-  //                     screening={screening}
-  //                     movie={movie}
-  //                   />
-  //                 );
-  //               }
-  //               return null;
-  //             })}
-  //         </div>
-  //       ))}
-  //     </div>
-  //   );
-  // }
 }

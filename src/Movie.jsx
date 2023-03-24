@@ -1,20 +1,16 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Card, Badge } from "react-bootstrap";
-import "./style.css";
+export default function Movie({ screening, movie }) {
+  if (!screening || !movie) {
+    return <div>Error: Screening or Movie is undefined.</div>;
+  }
 
-export default function Movie({
-  // if (!movie||!screening) {
-  //   return <div>Loading...</div>;
-  // }
-  screening: { screeningId, screeningTime, auditorium },
-  movie: {
-    id,
-    title,
-    description: { length, categories, posterImage },
-  },
-}) {
-  posterImage = "https://cinema-rest.nodehill.se/" + posterImage;
+  const { screeningId, screeningTime, auditorium } = screening;
+  const { id, title, description } = movie;
+  const { length, categories, posterImage } = description;
+
+  let posterImageURL = "https://cinema-rest.nodehill.se/" + posterImage;
 
   function GetTimeDisplay(timeCode) {
     const date = new Date(timeCode);
@@ -24,7 +20,7 @@ export default function Movie({
   return (
     <Link to={`/booking/${id}`} className="movie-link">
       <Card className="movie-card">
-        <Card.Img variant="top" src={posterImage} alt={title} />
+        <Card.Img variant="top" src={posterImageURL} alt={title} />
         <Card.Body>
           <Card.Title className="movie-title">{title}</Card.Title>
           <Card.Text className="movie-info">
@@ -43,29 +39,3 @@ export default function Movie({
     </Link>
   );
 }
-
-// function TimeDisplay(timeCode) {
-//   const date = new Date(timeCode);
-//   const formattedDate = date.toISOString().replace("T", " ").slice(0, -1);
-//   return <h2>{formattedDate}</h2>
-// }
-
-// return (
-//   <>
-//     <Link //
-//       to={"/booking/" + id}
-
-//       // state={{ screeningId: screeningId }}
-//     >
-//       <div className="movie">
-//         <h2>{GetTimeDisplay(screeningTime)}</h2>
-//         <p>Title: {title}</p>
-//         <p>Lenght: {length}</p>
-//         <img src={posterImage} />
-//         {categories.map((categorie) => (
-//           <p key={categorie}> {categorie} </p>
-//         ))}
-//       </div>
-//     </Link>
-//   </>
-// );

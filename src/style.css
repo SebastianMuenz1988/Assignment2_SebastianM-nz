@@ -1,41 +1,91 @@
-/* -------------navbar-------------------------- */
-.navbar {
-  border-bottom: 1px solid #ccc;
+/* -----------Nav--------------- */
+
+/* -----------Seats--------------- */
+
+.seat {
+  min-height: 50px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+.seat:hover {
+  transform: scale(1.1);
 }
 
-.navbar-brand {
-  font-weight: bold;
+.available {
+  background-color: #fff;
 }
 
-.nav-link {
-  color: #333;
-  padding: 0.5rem;
-  margin: 0 0.25rem;
-  border-radius: 0.25rem;
+.occupied {
+  background-color: #aaa;
 }
 
-.nav-link:hover,
-.nav-link.active {
-  background-color: #eee;
+.selected {
+  background-color: #f00;
+}
+
+.seat-map {
+  display: grid;
+  direction: rtl;
+  justify-content: flex-start;
+  grid-template-columns: repeat(auto-fill, 40px);
+  grid-gap: 5px;
 }
 
 /* -------------movie-------------------------- */
 
-.movie-row {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 40px; /* add some spacing between the cards */
+#categoryDropDown {
+  margin: 20px 0;
+  /* width: 100%; */
+  height: 50px;
+  font-size: 18px;
+  font-weight: bold;
+  border-radius: 5px;
+  background-color: #ccd6e0;
+  color: #fff;
+  border-color: #dae2eb;
+}
+#categoryDropDown:hover {
+  box-shadow: 0 0 10px rgba(179, 30, 30, 0.4);
+}
+
+#categoryDropDownItem {
+  font-size: 16px;
+  font-weight: normal;
+}
+.weekday-row {
+  height: 60px;
+  border: none;
+  background: linear-gradient(to bottom, #f5f5f5, #e5e5e5);
+  padding: 10px;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  margin-bottom: 50px;
+  text-transform: uppercase;
+  color: #555;
+}
+.movie-link {
+  color: #212529;
+  text-decoration: none;
+  transition: all 0.3s ease;
 }
 
 .movie-card {
   display: flex;
   flex-direction: column;
-  width: 300px; /* adjust this value as needed */
+  height: 700px;
+  width: 280px; /* adjust this value as needed */
   margin-bottom: 40px; /* add some space at the bottom of each card */
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2); /* add a subtle box shadow */
   border-radius: 5px; /* round the corners of the card */
   overflow: hidden; /* clip any content that overflows the card */
+}
+
+.movie-card:hover {
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+  transform: translateY(-5px);
 }
 
 .card-img-top {
@@ -44,29 +94,6 @@
   object-fit: contain;
   object-position: center;
   margin: 10px 0;
-}
-
-.movie-card .card-body {
-  padding: 20px; /* add some padding to the card body */
-  flex-grow: 1;
-}
-
-.movie-card .movie-title {
-  font-size: 24px;
-  margin-bottom: 10px;
-}
-
-.movie-card .movie-info {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
-  font-size: 18px;
-}
-
-.movie-card .movie-categories {
-  display: flex;
-  flex-wrap: wrap;
-  margin-bottom: 10px;
 }
 
 .movie-card .movie-category {
@@ -80,71 +107,56 @@
   background-color: #007bff; /* use a blue background color for the badges */
   color: #fff; /* set the text color of the badges to white */
 }
+.movie-title {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  color: #212529;
+}
 
-/* -------------booking-------------------------- */
-
-.Container {
+/* Card info style */
+.movie-info {
+  margin-bottom: 1rem;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  margin-top: 50px;
 }
 
-.Row {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 50px;
+/* Movie time style */
+.movie-time {
+  font-weight: bold;
+  font-size: 1.1rem;
+  margin-right: 1rem;
+  text-transform: uppercase;
+  color: #6c757d;
 }
 
-.Col {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
+/* Movie length style */
+.movie-length {
+  font-size: 1.1rem;
+  color: #6c757d;
+  text-transform: uppercase;
 }
 
-h1 {
-  font-size: 36px;
-  margin-bottom: 20px;
+/* Movie categories container style */
+.movie-categories {
+  margin-top: 1rem;
 }
 
-h2 {
-  font-size: 24px;
-  margin-bottom: 20px;
-}
-
-p {
-  font-size: 18px;
-  margin-bottom: 20px;
-}
-
-ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-li {
-  font-size: 16px;
-  margin-bottom: 10px;
-}
-
-select {
-  font-size: 16px;
-  margin-left: 10px;
-}
-
-Link {
-  font-size: 18px;
-  text-decoration: none;
+/* Movie category style */
+.movie-category {
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: bold;
+  padding: 0.4rem 0.8rem;
+  border-radius: 25px;
   color: #fff;
-  background-color: #007bff;
-  padding: 10px 20px;
-  border-radius: 5px;
 }
 
-Link:hover {
-  background-color: #0069d9;
+/* Badge style */
+.movie-category.primary {
+  background-color: #007bff;
+  border-color: #007bff;
 }
+
+/* ----------booking-------------- */
