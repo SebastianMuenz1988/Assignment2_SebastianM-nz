@@ -1,29 +1,46 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { Card, Badge } from "react-bootstrap";
+import "./style.css";
 
-function GotToBooking() {
-  return <h1>Another Page</h1>;
-}
-
-export default function Movie(props) {
-  // Destructure props into separate variables
-  let { title, description, screeningTime, auditorium, screeningId } = props; // destructure "title" and "description" from props
-  let { posterImage } = description; //desctructure "posterImage" attribute from description
-
-  // Add the correct domain to the image path
+export default function Movie({
+  // if (!movie||!screening) {
+  //   return <div>Loading...</div>;
+  // }
+  screening: { screeningId, screeningTime, auditorium },
+  movie: {
+    id,
+    title,
+    description: { length, categories, posterImage },
+  },
+}) {
   posterImage = "https://cinema-rest.nodehill.se/" + posterImage;
 
+  function GetTimeDisplay(timeCode) {
+    const date = new Date(timeCode);
+    return date.toLocaleString();
+  }
+
   return (
-    <>
-      <Link to="/booking" state={{ screeningId: screeningId }}>
-        <div className="movie">
-          {TimeDisplay(screeningTime)}
-          <p>Title: {title}</p>
-          <p>Cinema: {auditorium}</p>
-          <img src={posterImage} />
-        </div>
-      </Link>
-    </>
+    <Link to={`/booking/${id}`} className="movie-link">
+      <Card className="movie-card">
+        <Card.Img variant="top" src={posterImage} alt={title} />
+        <Card.Body>
+          <Card.Title className="movie-title">{title}</Card.Title>
+          <Card.Text className="movie-info">
+            <span className="movie-time">{GetTimeDisplay(screeningTime)}</span>
+            <span className="movie-length">{length} min</span>
+          </Card.Text>
+          <div className="movie-categories">
+            {categories.map((category) => (
+              <Badge key={category} variant="primary" className="movie-category">
+                {category}
+              </Badge>
+            ))}
+          </div>
+        </Card.Body>
+      </Card>
+    </Link>
   );
 }
 
@@ -33,13 +50,22 @@ export default function Movie(props) {
 //   return <h2>{formattedDate}</h2>
 // }
 
-function TimeDisplay(timeCode) {
-  const date = new Date(timeCode);
-  return date.toLocaleString();
-}
+// return (
+//   <>
+//     <Link //
+//       to={"/booking/" + id}
 
-// <Movie key={id}
-// title = { title }
-// description = { description }
-// screeningTime = { screeningTime }
-// auditorium = { auditorium } />
+//       // state={{ screeningId: screeningId }}
+//     >
+//       <div className="movie">
+//         <h2>{GetTimeDisplay(screeningTime)}</h2>
+//         <p>Title: {title}</p>
+//         <p>Lenght: {length}</p>
+//         <img src={posterImage} />
+//         {categories.map((categorie) => (
+//           <p key={categorie}> {categorie} </p>
+//         ))}
+//       </div>
+//     </Link>
+//   </>
+// );

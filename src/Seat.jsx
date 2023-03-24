@@ -1,5 +1,5 @@
 import React from "react";
-import { Container, Row, Col, Button } from "react-bootstrap";
+import { Col } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 export default function Seat({
@@ -13,16 +13,6 @@ export default function Seat({
   function handleSelectClick() {
     toggleSelect(id);
   }
-
-  // return (
-  //   <div //
-  //     className={`seat ${seat.occupied ? "occupied" : ""} ${seat.selected ? "selected" : ""}`}
-  //     onClick={handleSelectClick}
-  //   >
-  //     {id}
-  //   </div>
-  // );
-  const getWidth = () => (18 / 8) * 100;
 
   return (
     <Col //

@@ -2,7 +2,7 @@ import { Routes, Route } from "react-router-dom";
 
 import NavBar from "./NavBar";
 
-import StartPage from "./StartPage.jsx";
+import StartPage from "./StartPage";
 import MovieList from "./MovieList";
 import Booking from "./Booking";
 import Receipt from "./Receipt";
@@ -20,8 +20,10 @@ export default function App() {
         <Routes>
           <Route path="/" element={<StartPage />} />
           <Route path="/movies" element={<MovieList />} />
-          <Route path="/booking" element={<Booking />} />
+          <Route path="/booking/:id" element={<Booking />} />
           <Route path="/receipt" element={<Receipt />} />
+          {/* <Route path="/receipt" element={<Receipt location={location} />} /> */}
+          {/* <Route path="/receipt" element={({ location }) => <Receipt location={location} />} /> */}
           <Route path="/about-us" element={<AboutUs />} />
           {/* Add a 404 page last using path='*' */}
           <Route path="*" element={<Page404 />} />
@@ -30,3 +32,6 @@ export default function App() {
     </>
   );
 }
+
+//implement url api and :id
+// sho my already booked movies

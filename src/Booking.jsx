@@ -1,51 +1,55 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
 import SeatMap from "./SeatMap";
+import { useParams } from "react-router-dom";
+import { generateBookingNumber } from "./utilities/generate-booking-number";
+import { Link } from "react-router-dom";
+import { Container, Button, Form, ListGroup } from "react-bootstrap";
+import { Row, Col } from "react-bootstrap";
+import { Card, Badge } from "react-bootstrap";
+import "./booking.css";
 
 export default function Booking() {
-  //Get screeningID from location object
-  const location = useLocation();
-  const screeningId = location.state?.screeningId;
+  // read the id param from the url
+  const { id: screeningId } = useParams();
   console.log("screeningId", screeningId);
-  let pickedMovie = "";
-
-  let total = "";
 
   if (!screeningId) {
     return <div>No data found</div>;
   }
 
-  const [s, setS] = useState({
-    occupiedSeats: [],
-    seats: [],
-    selectedSeats: [],
-    total: 0,
-  });
-
-  let copyOfS = { ...s };
-  const set = (key, value) => {
-    copyOfS[key] = value;
-    setS({ ...copyOfS });
-  };
+  const [pickedMovie, setPickedMovie] = useState([]);
+  const [seats, setSeats] = useState([]);
+  const [selectedSeats, setSelectedSeats] = useState([]);
+  const [total, setTotal] = useState();
+  const [bookingNo, setbookingNo] = useState([]);
 
   useEffect(() => {
-    fetchOccupiedSeats();
+    fetchPickedMovieOccupiedSeats();
     console.log("useEffect called!");
   }, []);
 
-  // useEffect(() => {
-  //   getTotal();
-  // }, [s]);
+  useEffect(() => {
+    createSeats();
+  }, [pickedMovie]);
 
-  ////////////  fetchOccupiedSeats
-  const fetchOccupiedSeats = async () => {
+  useEffect(() => {
+    updateSelected();
+  }, [seats]);
+
+  useEffect(() => {
+    getTotal();
+  }, [selectedSeats]);
+
+  // fetchOccupiedSeats
+  const fetchPickedMovieOccupiedSeats = async () => {
     console.log("call fetchOccupiedSeats");
-    const response = await fetch("/api/occupied_seats");
+    const response = await fetch("/api/occupied_seats?screeningId=" + screeningId);
     const data = await response.json();
-    set("occupiedSeats", data);
-    let occupiedSeatsArray = data[screeningId].occupiedSeats.split(",").map(Number);
-    set("occupiedSeatsView", occupiedSeatsArray);
+    const pickedM = data[0];
+    console.log("response: ", pickedM.occupiedSeats);
+    setPickedMovie(pickedM);
+
     //   {
     //   "screeningId": 1,
     //   "screeningTime": "2023-05-01T16:00:00.000Z",
@@ -56,25 +60,16 @@ export default function Booking() {
     //   "total": 81,
     //   "occupiedPercent": "32"
     // }
+  };
 
-    // get the selected movie and auditorium
-    pickedMovie = data.find((obj) => obj.screeningId === screeningId) || [];
-
-    // console.log("pickedMovie.auditorium booking", pickedMovie.auditorium);
-    // seatsPerRow = pickedMovie.auditorium === "Stora Salongen" ? "8" : "6";
-    // console.log("seatsPerRow booking", seatsPerRow);
-
-    // if (pickedMovie.auditorium === "Stora Salongen") {
-    //   seatsPerRow = 8;
-    // }
-    // if (pickedMovie.auditorium === "Lilla Salongen") {
-    //   seatsPerRow = 6; //Auditorium 2 =6 seats per row
-    // }
-
-    // create a new seat array from pickedMoive Object
+  // If state variable: "pickedMoive" is updated -> Update selected seats
+  const createSeats = () => {
     const seats = [];
+    if (!pickedMovie) {
+      return <div>Loading...</div>;
+    }
     for (let i = 0; i <= pickedMovie.total; i++) {
-      const occupiedSeatsArray = data[screeningId].occupiedSeats.split(",").map(Number);
+      const occupiedSeatsArray = pickedMovie.occupiedSeats.split(",").map(Number);
       const seat = {
         id: i,
         occupied: occupiedSeatsArray.includes(i),
@@ -83,80 +78,18 @@ export default function Booking() {
       };
       seats.push(seat);
     }
-    set("seats", seats);
+    setSeats(seats);
+    console.log("seats: ", seats);
+    console.log("s.pickedMovie: ", pickedMovie);
   };
 
-  ////////////  functions
-
-  // const getSeatsPerRow = () => {
-  //   console.log(pickedMovie);
-  //   console.log("pickedMovie", pickedMovie.auditorium);
-  //   if (pickedMovie.auditorium === "Stora Salongen") {
-  //     return 8; //Auditorium 1 = 8 seats per row
-  //   }
-  //   if (pickedMovie.auditorium === "Lilla Salongen") {
-  //     return 6; //Auditorium 2 =6 seats per row
-  //   }
-  // };
-
-  const seatPerRowF = () => {
-    let pM = s.occupiedSeats.find((obj) => obj.screeningId === screeningId) || [];
-    console.log("pM.auditorium booking", pM.auditorium);
-    return pM.auditorium === "Stora Salongen" ? "8" : "6";
-  };
-
-  const setSeatType = (event) => {
-    console.log("call setSeatType");
-    const selectedType = event.target.value;
-    const id = event.target.id;
-    const copySeats = [...s.seats]; // always make a copy if you wanna change sth
-    const selectedSeat = copySeats.find((seat) => {
-      return seat.id.toString() === id;
-    });
-
-    selectedSeat.seatType = selectedType; //
-    // setTodos(s.seats);
-    set("seats", copySeats);
-    console.log(copySeats);
-
-    updateSelected();
-  };
-
-  function toggleSelect(id) {
-    console.log("call toggleSelect");
-    const copySeats = [...s.seats]; // always make a copy if you wanna change sth
-    const seat = copySeats.find((seat) => seat.id === id); // find object
-    console.log("seat.id: ", seat.id);
-
-    if (
-      !s.selectedSeats.some((sseat) => sseat.id == seat.id) && //not already selected
-      s.selectedSeats.length != 0 && //not the thirst one
-      !s.selectedSeats.some((sseat) => sseat.id + 1 == seat.id) && // not adjacent (right)
-      !s.selectedSeats.some((sseat) => sseat.id - 1 == seat.id) // not adjacent (left)
-    ) {
-      console.log("Only adjacent seats!");
-      return;
-    }
-
-    if (
-      (seat.id % 8 == 7 && s.selectedSeats.some((sseat) => sseat.id % 8 == 0)) || //
-      (seat.id % 8 == 0 && s.selectedSeats.some((sseat) => sseat.id % 8 == 7))
-    )
-      return;
-
-    if (!seat.occupied) seat.selected = !seat.selected; //
-    // setTodos(s.seats);
-    set("seats", copySeats);
-
-    updateSelected();
-  }
-
-  async function updateSelected() {
+  // If state variable: "seats" is updated -> Update selected seats
+  const updateSelected = () => {
     console.log("call updateSelected");
 
-    const selectedFromSeats = s.seats.filter((seat) => seat.selected);
+    const selectedFromSeats = seats.filter((seat) => seat.selected);
     // console.log("selectedFromSeats", selectedFromSeats[0].id);
-    const selectedSeats = [];
+    const selSeats = [];
 
     for (let i = 0; i < selectedFromSeats.length; i++) {
       const seat = {
@@ -164,68 +97,134 @@ export default function Booking() {
         seatType: selectedFromSeats[i].seatType,
         price: getPrice(selectedFromSeats[i].id),
       };
-      selectedSeats.push(seat);
+      selSeats.push(seat);
     }
-    set("selectedSeats", selectedSeats);
-    getTotal(selectedSeats); //pass on receipt because selected seat
-  }
+    setSelectedSeats(selSeats);
+    // getTotal(selectedSeats); //pass on receipt because selected seat
+  };
 
-  // !! Why can't I select pickedMovie??
+  // If state variable: "selectedSeats" is updated -> Update selected seats
+  const getTotal = () => {
+    let varTotal = 0;
+    for (let i = 0; i < selectedSeats.length; i++) {
+      varTotal += selectedSeats[i].price;
+    }
+    // varTotal = selectedSeats.reduce((acc, obj) => acc + obj.price, 0);
+    console.log("varTotal: ", varTotal);
+    setTotal(varTotal);
+  };
 
+  // Functions that I pass to Seats
+  const seatPerRow = () => {
+    // let pM = pickedMovie || [];
+    console.log("pM.auditorium booking", pickedMovie.auditorium);
+    return pickedMovie.auditorium === "Stora Salongen" ? "8" : "6";
+  };
+
+  const setSeatType = (event) => {
+    console.log("call setSeatType");
+    const selectedType = event.target.value;
+    const id = event.target.id;
+    const copySeats = [...seats]; // always make a copy if you wanna change sth
+    const selectedSeat = copySeats.find((seat) => {
+      return seat.id.toString() === id;
+    });
+
+    selectedSeat.seatType = selectedType; //
+    setSeats(copySeats);
+  };
+
+  const toggleSelect = (id) => {
+    console.log("call toggleSelect");
+    const copySeats = [...seats]; // always make a copy if you wanna change sth
+    const seat = copySeats.find((seat) => seat.id === id); // find object
+    console.log("seat.id: ", seat.id);
+
+    if (
+      !selectedSeats.some((sseat) => sseat.id == seat.id) && //not already selected
+      selectedSeats.length != 0 && //not the thirst one
+      !selectedSeats.some((sseat) => sseat.id + 1 == seat.id) && // not adjacent (right)
+      !selectedSeats.some((sseat) => sseat.id - 1 == seat.id) // not adjacent (left)
+    ) {
+      console.log("Only adjacent seats!");
+      return;
+    }
+
+    if (
+      (seat.id % 8 == 7 && selectedSeats.some((sseat) => sseat.id % 8 == 0)) || //
+      (seat.id % 8 == 0 && selectedSeats.some((sseat) => sseat.id % 8 == 7))
+    )
+      return;
+
+    if (!seat.occupied) seat.selected = !seat.selected; //
+
+    setSeats(copySeats);
+  };
+
+  // Functions used in DOM
   const getPrice = (id) => {
     console.log("call getPrice");
     // const id = event.target.id;
-    if (s.seats[id].seatType === "Adult") {
+    if (seats[id].seatType === "Adult") {
       return 110;
     }
-    if (s.seats[id].seatType === "Child") {
+    if (seats[id].seatType === "Child") {
       return 75;
     }
-    if (s.seats[id].seatType === "Senior") {
+    if (seats[id].seatType === "Senior") {
       return 85;
     }
   };
 
-  const getTotal = (receipt) => {
-    console.log("call getTotal");
-    console.log("s.selectedSeats: ", receipt);
-    total = 0;
-    for (let i = 0; i < receipt.length; i++) {
-      total += receipt[i].price;
-    }
-    // total = s.selectedSeats.reduce((acc, obj) => acc + obj.price, 0);
-    console.log("total: ", total);
-    set("total", total);
-  };
+  console.log("selectedSeats", selectedSeats);
+  console.log("total", total);
 
   return (
-    <>
-      <h1>You picked: </h1>
-      <p>Please, select you seat!</p>
-      <SeatMap //
-        seats={s.seats}
-        toggleSelect={toggleSelect}
-        setSeatType={setSeatType}
-        seatsPerRow={seatPerRowF()}
-      />
-      <div>
-        <h2>Selected Seats</h2>
-        <ul>
-          {s.selectedSeats.map((selectedSeat) => (
-            <li key={selectedSeat.id}>
-              {`Seat No:  ${selectedSeat.id} `}
-              <select id={selectedSeat.id} value={s.seats[selectedSeat.id].seatType} onChange={setSeatType}>
-                <option>Child</option>
-                <option>Adult</option>
-                <option>Senior</option>
-              </select>
-              <p id={selectedSeat.id}>Price: {getPrice(selectedSeat.id)}</p>
-            </li>
-          ))}
-        </ul>
-        <p>Total: {s.total}</p>
-        <button>Take reservation</button>
-      </div>
-    </>
+    <Container>
+      <h1 className="text-center my-5">Seat Booking System</h1>
+      <Row>
+        <Col md={8}>
+          <Card className="mb-4">
+            <Card.Header>
+              <h2>You picked:</h2>
+            </Card.Header>
+            <Card.Body>
+              <SeatMap seats={seats} toggleSelect={toggleSelect} setSeatType={setSeatType} seatsPerRow={seatPerRow()} />
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col md={4}>
+          <Card className="mb-4">
+            <Card.Header>
+              <h2>Selected Seats</h2>
+            </Card.Header>
+            <Card.Body>
+              <ul>
+                {selectedSeats.map((selectedSeat) => (
+                  <li key={selectedSeat.id}>
+                    <div className="d-flex justify-content-between align-items-center">
+                      <h4>{`Seat No: ${selectedSeat.id}`}</h4>
+                      <select id={selectedSeat.id} value={seats[selectedSeat.id].seatType} onChange={setSeatType}>
+                        <option>Child</option>
+                        <option>Adult</option>
+                        <option>Senior</option>
+                      </select>
+                    </div>
+                    <p>Price: {getPrice(selectedSeat.id)}</p>
+                  </li>
+                ))}
+              </ul>
+              <hr />
+              <h4 className="text-center mb-4">Total: {total}</h4>
+              <div className="text-center">
+                <Button as={Link} to="/receipt" variant="primary" className="w-100">
+                  Next Step
+                </Button>
+              </div>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    </Container>
   );
 }
