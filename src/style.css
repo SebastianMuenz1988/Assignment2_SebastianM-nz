@@ -1,34 +1,6 @@
-/* 
-:root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-} */
-
-/* -----------Nav--------------- */
-/* .navbar {
-  border-bottom: 1px solid #ccc;
-}
-
-.navbar-brand {
-  font-weight: bold;
-}
-
-.nav-link {
-  color: #333;
-  padding: 0.5rem;
-  margin: 0 0.25rem;
-  border-radius: 0.25rem;
-}
-
-.nav-link:hover,
-.nav-link.active {
-  background-color: #5f5a5a;
-} */
-/* -----------Seats--------------- */
-
 .seat {
-  min-height: 50px;
+  min-height: 40px;
+  min-width: 35px;
   font-size: 1rem;
   border: 1px solid #ccc;
   display: flex;
@@ -36,6 +8,7 @@
   align-items: center;
   cursor: pointer;
 }
+
 .seat:hover {
   transform: scale(1.1);
 }
@@ -52,12 +25,8 @@
   background-color: #f00;
 }
 
-.seat-map {
-  display: grid;
-  direction: rtl;
-  justify-content: flex-start;
-  grid-template-columns: repeat(auto-fill, 40px);
-  grid-gap: 5px;
+#seatrow {
+  margin-bottom: 20px;
 }
 
 /* -------------movie-------------------------- */
@@ -94,8 +63,8 @@
 .movie-card {
   display: flex;
   flex-direction: column;
-  height: 700px;
-  width: 280px; /* adjust this value as needed */
+  height: 600px;
+  width: 330px; /* adjust this value as needed */
   margin-bottom: 40px; /* add some space at the bottom of each card */
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2); /* add a subtle box shadow */
   border-radius: 5px; /* round the corners of the card */
@@ -159,6 +128,7 @@
 /* Movie categories container style */
 .movie-categories {
   margin-top: 1rem;
+  min-height: 70px;
 }
 
 /* Movie category style */

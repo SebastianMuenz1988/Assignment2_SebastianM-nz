@@ -21,12 +21,7 @@ export default function Booking() {
 
   useEffect(() => {
     fetchPickedMovieOccupiedSeats();
-    console.log("useEffect called!");
   }, []);
-
-  useEffect(() => {
-    createSeats();
-  }, [pickedMovie]);
 
   useEffect(() => {
     updateSelected();
@@ -38,51 +33,47 @@ export default function Booking() {
 
   //----------------Fetching-----------------------
 
+  //   {
+  //   "screeningId": 1,
+  //   "screeningTime": "2023-05-01T16:00:00.000Z",
+  //   "movie": "Crocodile Dundee",
+  //   "auditorium": "Stora Salongen",
+  //   "occupiedSeats": "2, 3, 12, 14, 15, ..., 76, 77",
+  //   "occupied": 26,
+  //   "total": 81,
+  //   "occupiedPercent": "32"
+  // }
+
   const fetchPickedMovieOccupiedSeats = async () => {
     console.log("call fetchOccupiedSeats");
-    const response = await fetch("/api/occupied_seats?screeningId=" + screeningId);
-    const data = await response.json();
+    const response1 = await fetch("/api/occupied_seats?screeningId=" + screeningId);
+    const data = await response1.json();
     const pickedM = data[0];
-    console.log("response: ", pickedM.occupiedSeats);
+    pickedM.occupiedSeatsArray = pickedM.occupiedSeats.split(",").map(Number);
+    console.log("pickedM: ", pickedM.occupiedSeats);
     setPickedMovie(pickedM);
 
-    //   {
-    //   "screeningId": 1,
-    //   "screeningTime": "2023-05-01T16:00:00.000Z",
-    //   "movie": "Crocodile Dundee",
-    //   "auditorium": "Stora Salongen",
-    //   "occupiedSeats": "2, 3, 12, 14, 15, ..., 76, 77",
-    //   "occupied": 26,
-    //   "total": 81,
-    //   "occupiedPercent": "32"
-    // }
-  };
-
-  //----------------Seats-----------------------
-
-  const createSeats = () => {
-    const seats = [];
-    if (!pickedMovie) {
-      return <div>Loading...</div>;
-    }
-    for (let i = 0; i <= pickedMovie.total; i++) {
-      const occupiedSeatsArray = pickedMovie.occupiedSeats.split(",").map(Number);
+    const response2 = await fetch(`/api/seats/?auditoriumId=${pickedM.auditorium === "Stora Salongen" ? 1 : 2}&sort=seatNumber`);
+    const fseats = await response2.json();
+    console.log("fseats", fseats);
+    let ss = [];
+    for (let s of fseats) {
       const seat = {
-        id: i + 1,
-        occupied: occupiedSeatsArray.includes(i),
+        id: s.seatNumber,
+        row: s.rowNumber,
+        occupied: pickedM.occupiedSeatsArray.includes(s.seatNumber),
         selected: false,
         seatType: "Adult",
       };
-      seats.push(seat);
+      ss.push(seat);
     }
-    setSeats(seats);
-    console.log("seats: ", seats);
-    console.log("s.pickedMovie: ", pickedMovie);
+    console.log(ss);
+    setSeats(ss);
   };
 
   // If state variable: "seats" is updated -> Update selected seats
   const updateSelected = () => {
-    console.log("call updateSelected");
+    console.log("call updateSelected - seats: ", seats);
 
     const selectedFromSeats = seats.filter((seat) => seat.selected);
     // console.log("selectedFromSeats", selectedFromSeats[0].id);
@@ -92,6 +83,7 @@ export default function Booking() {
       const seat = {
         id: selectedFromSeats[i].id,
         seatType: selectedFromSeats[i].seatType,
+        seatRow: selectedFromSeats[i].row,
         price: getPrice(selectedFromSeats[i].id),
       };
       selSeats.push(seat);
@@ -136,6 +128,7 @@ export default function Booking() {
     const copySeats = [...seats]; // always make a copy if you wanna change sth
     const seat = copySeats.find((seat) => seat.id === id); // find object
     console.log("seat.id: ", seat.id);
+    console.log("selectedSeats: ", selectedSeats);
 
     if (
       !selectedSeats.some((sseat) => sseat.id == seat.id) && //not already selected
@@ -154,14 +147,20 @@ export default function Booking() {
       console.log("Not allowed! First deselct the outer seats!");
       return;
     }
-
-    if (
-      (seat.id % seatsPerRow() == 1 && selectedSeats.some((sseat) => sseat.id % seatsPerRow() == 0)) || //
-      (seat.id % seatsPerRow() == 0 && selectedSeats.some((sseat) => sseat.id % seatsPerRow() == 1))
-    ) {
+    if (selectedSeats.length > 0 && !selectedSeats.some((sseat) => sseat.seatRow === seat.row)) {
       console.log("Only in the same row!");
+      console.log(selectedSeats);
+      console.log("seat.row ", seat.row);
       return;
     }
+
+    // if (
+    //   (seat.id % seatsPerRow() == 1 && selectedSeats.some((sseat) => sseat.id % seatsPerRow() == 0)) || //
+    //   (seat.id % seatsPerRow() == 0 && selectedSeats.some((sseat) => sseat.id % seatsPerRow() == 1))
+    // ) {
+    //   console.log("Only in the same row!");
+    //   return;
+    // }
 
     if (!seat.occupied) seat.selected = !seat.selected; //
 
@@ -187,9 +186,6 @@ export default function Booking() {
     const date = new Date(timeCode);
     return date.toLocaleString();
   }
-
-  // console.log("selectedSeats", selectedSeats);
-  // console.log("total", total);
 
   //----------------Return-----------------------
 

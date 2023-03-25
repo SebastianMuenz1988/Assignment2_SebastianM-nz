@@ -1,13 +1,11 @@
 import { Routes, Route } from "react-router-dom";
 
 import NavBar from "./NavBar";
-
 import StartPage from "./StartPage";
 import MovieList from "./MovieList";
 import Booking from "./Booking";
 import Receipt from "./Receipt";
 import AboutUs from "./AboutUs";
-
 import Page404 from "./Page404.jsx";
 
 export default function App() {

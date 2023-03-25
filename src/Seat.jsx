@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Col } from "react-bootstrap";
 
 export default function Seat({
