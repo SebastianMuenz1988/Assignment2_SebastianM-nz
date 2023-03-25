@@ -30,6 +30,8 @@ export default function Receipt() {
             <Card.Body>
               <Card.Title>Booking Details</Card.Title>
               <Card.Text>Booking Timestamp: {timestamp}</Card.Text>
+              <Card.Text>Booked Movie: {pickedMovie.movie}</Card.Text>
+              <Card.Text>Auditorium: {pickedMovie.auditorium}</Card.Text>
               <Card.Text>Screening Time: {GetTimeDisplay(pickedMovie.screeningTime)}</Card.Text>
               <Card.Text>Booking Number: {bookingNo}</Card.Text>
               <Card.Text>
@@ -37,7 +39,7 @@ export default function Receipt() {
                 {selectedSeats.map((seat, index) => (
                   <span key={index}>
                     {index > 0 ? ", " : ""}
-                    {seat.id}
+                    {seat.id} - {seat.seatType}
                   </span>
                 ))}
               </Card.Text>
