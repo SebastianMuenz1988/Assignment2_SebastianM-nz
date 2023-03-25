@@ -1,7 +1,6 @@
 import React from "react";
-import { useState } from "react";
 import Seat from "./Seat";
-import { Container, Row, Col, Button } from "react-bootstrap";
+import { Container, Row } from "react-bootstrap";
 
 export default function SeatMap({
   //

@@ -1,29 +1,21 @@
 import React from "react";
-import { useState, useEffect } from "react";
-import SeatMap from "./SeatMap";
-import { useParams } from "react-router-dom";
-import { generateBookingNumber } from "./utilities/generate-booking-number";
-import { Link } from "react-router-dom";
+
 import { useLocation } from "react-router-dom";
-import Container from "react-bootstrap/Container";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import Card from "react-bootstrap/Card";
+import { Container, Row, Col, Card } from "react-bootstrap";
 
 export default function Receipt() {
   const location = useLocation();
   console.log("location: ", location);
 
-  const { selectedSeats, total } = location.state ? location.state : "null";
-  console.log("selectedSeats: ", selectedSeats);
-  console.log("total: ", total);
+  const { pickedMovie, selectedSeats, total, bookingNo } = location.state ? location.state : "null";
 
-  const currentDate = new Date().toLocaleDateString("en-US");
-  const currentTime = new Date().toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "numeric",
-  });
-  const bookingNumber = generateBookingNumber();
+  const date = new Date();
+  const timestamp = `${date.toLocaleDateString()} ${date.toLocaleTimeString([], { hour12: true })}`;
+
+  function GetTimeDisplay(timeCode) {
+    const date = new Date(timeCode);
+    return date.toLocaleString();
+  }
 
   return (
     <Container>
@@ -37,11 +29,11 @@ export default function Receipt() {
           <Card>
             <Card.Body>
               <Card.Title>Booking Details</Card.Title>
-              <Card.Text>Date: {currentDate}</Card.Text>
-              <Card.Text>Time: {currentTime}</Card.Text>
-              <Card.Text>Booking Number: {bookingNumber}</Card.Text>
+              <Card.Text>Booking Timestamp: {timestamp}</Card.Text>
+              <Card.Text>Screening Time: {GetTimeDisplay(pickedMovie.screeningTime)}</Card.Text>
+              <Card.Text>Booking Number: {bookingNo}</Card.Text>
               <Card.Text>
-                Selected Seats:{" "}
+                Booked Seats:{" "}
                 {selectedSeats.map((seat, index) => (
                   <span key={index}>
                     {index > 0 ? ", " : ""}

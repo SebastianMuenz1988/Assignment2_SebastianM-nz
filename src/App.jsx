@@ -22,16 +22,10 @@ export default function App() {
           <Route path="/movies" element={<MovieList />} />
           <Route path="/booking/:id" element={<Booking />} />
           <Route path="/receipt" element={<Receipt />} />
-          {/* <Route path="/receipt" element={<Receipt location={location} />} /> */}
-          {/* <Route path="/receipt" element={({ location }) => <Receipt location={location} />} /> */}
           <Route path="/about-us" element={<AboutUs />} />
-          {/* Add a 404 page last using path='*' */}
           <Route path="*" element={<Page404 />} />
         </Routes>
       </main>
     </>
   );
 }
-
-//implement url api and :id
-// sho my already booked movies

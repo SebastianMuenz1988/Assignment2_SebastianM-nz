@@ -1,13 +1,7 @@
 import React from "react";
 import { useState, useEffect } from "react";
-// import our Movie component
 import Movie from "./Movie";
 import { Dropdown, DropdownButton, Row, Col } from "react-bootstrap";
-
-// It's important to note that calling the update function does not
-// immediately update the state variable. Instead, React will queue up
-// the state update and apply it during the next re - render.
-// This allows React to batch multiple state updates together for better performance.
 
 export default function App() {
   const [movies, setMovies] = useState([]);
@@ -23,18 +17,13 @@ export default function App() {
     fetchScreeningsOverview();
   }, []);
 
-  // useEffect(() => {
-  //   fetchMovies();
-  // }, []);
-
-  // useEffect(() => {
-  //   fetchCategories();
-  // }, []);
+  //----------------Fetching-----------------------
 
   const fetchMovies = async () => {
     // console.log("categoryFilter", categoryFilter);
     const response = await fetch("/api/movies");
     const data = await response.json();
+    // I do not use slugs because I need the id for fetching
     // add a slug to be used in url routes to each movie
     // for (let movie of data) {
     //   movie.slug = kebabify(movie.title);
@@ -95,7 +84,8 @@ export default function App() {
   // "title": "Adventure",
   // "description": "This is the Adventure category."
 
-  //------------------------------------------------------------------------
+  //----------------Functions-----------------------
+
   const getWeekday = (date) => {
     // console.log(date);
     const data = new Date(date);
@@ -113,10 +103,11 @@ export default function App() {
   const handleDropdownChange = (eventKey, event) => {
     setCategoryFilter(eventKey);
   };
-  console.log("movies: ", movies);
-  console.log("screenings: ", screenings);
-  // are movies and screenings fetched?
-  // if (movies === [] || screenings === []) {
+
+  // console.log("movies: ", movies);
+  // console.log("screenings: ", screenings);
+
+  //----------------Return-----------------------
 
   return (
     <div className="App">

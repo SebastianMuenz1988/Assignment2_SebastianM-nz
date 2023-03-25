@@ -1,16 +1,14 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import SeatMap from "./SeatMap";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
+import { Container, Button, Row, Col, Card } from "react-bootstrap";
 import { generateBookingNumber } from "./utilities/generate-booking-number";
-import { Link } from "react-router-dom";
-import { Container, Button, Form, ListGroup } from "react-bootstrap";
-import { Row, Col } from "react-bootstrap";
-import { Card, Badge } from "react-bootstrap";
+
 export default function Booking() {
   // read the id param from the url
   const { id: screeningId } = useParams();
-  console.log("screeningId", screeningId);
+  const bookingNo = generateBookingNumber();
 
   if (!screeningId) {
     return <div>No data found</div>;
@@ -20,7 +18,6 @@ export default function Booking() {
   const [seats, setSeats] = useState([]);
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [total, setTotal] = useState();
-  const [bookingNo, setbookingNo] = useState([]);
 
   useEffect(() => {
     fetchPickedMovieOccupiedSeats();
@@ -39,7 +36,8 @@ export default function Booking() {
     getTotal();
   }, [selectedSeats]);
 
-  // fetchOccupiedSeats
+  //----------------Fetching-----------------------
+
   const fetchPickedMovieOccupiedSeats = async () => {
     console.log("call fetchOccupiedSeats");
     const response = await fetch("/api/occupied_seats?screeningId=" + screeningId);
@@ -60,7 +58,8 @@ export default function Booking() {
     // }
   };
 
-  // If state variable: "pickedMoive" is updated -> Update selected seats
+  //----------------Seats-----------------------
+
   const createSeats = () => {
     const seats = [];
     if (!pickedMovie) {
@@ -69,7 +68,7 @@ export default function Booking() {
     for (let i = 0; i <= pickedMovie.total; i++) {
       const occupiedSeatsArray = pickedMovie.occupiedSeats.split(",").map(Number);
       const seat = {
-        id: i,
+        id: i + 1,
         occupied: occupiedSeatsArray.includes(i),
         selected: false,
         seatType: "Adult",
@@ -112,7 +111,7 @@ export default function Booking() {
     setTotal(varTotal);
   };
 
-  // Functions that I pass to Seats
+  //----------------Functions-----------------------
   const seatsPerRow = () => {
     // let pM = pickedMovie || [];
     console.log("pM.auditorium booking", pickedMovie.auditorium);
@@ -157,8 +156,8 @@ export default function Booking() {
     }
 
     if (
-      (seat.id % seatsPerRow() == seatsPerRow() - 1 && selectedSeats.some((sseat) => sseat.id % seatsPerRow() == 0)) || //
-      (seat.id % seatsPerRow() == 0 && selectedSeats.some((sseat) => sseat.id % seatsPerRow() == seatsPerRow() - 1))
+      (seat.id % seatsPerRow() == 1 && selectedSeats.some((sseat) => sseat.id % seatsPerRow() == 0)) || //
+      (seat.id % seatsPerRow() == 0 && selectedSeats.some((sseat) => sseat.id % seatsPerRow() == 1))
     ) {
       console.log("Only in the same row!");
       return;
@@ -189,8 +188,10 @@ export default function Booking() {
     return date.toLocaleString();
   }
 
-  console.log("selectedSeats", selectedSeats);
-  console.log("total", total);
+  // console.log("selectedSeats", selectedSeats);
+  // console.log("total", total);
+
+  //----------------Return-----------------------
 
   return (
     <Container>
@@ -219,7 +220,12 @@ export default function Booking() {
               <h2>Seats in the Auditorium {pickedMovie.auditorium}</h2>
             </Card.Header>
             <Card.Body>
-              <SeatMap seats={seats} toggleSelect={toggleSelect} setSeatType={setSeatType} seatsPerRow={seatsPerRow()} />
+              <SeatMap //
+                seats={seats}
+                toggleSelect={toggleSelect}
+                setSeatType={setSeatType}
+                seatsPerRow={seatsPerRow()}
+              />
             </Card.Body>
           </Card>
         </Col>
@@ -234,7 +240,11 @@ export default function Booking() {
                   <li key={selectedSeat.id}>
                     <div className="d-flex justify-content-between align-items-center">
                       <h4>{`Seat No: ${selectedSeat.id}`}</h4>
-                      <select id={selectedSeat.id} value={seats[selectedSeat.id].seatType} onChange={setSeatType}>
+                      <select //
+                        id={selectedSeat.id}
+                        value={seats[selectedSeat.id].seatType}
+                        onChange={setSeatType}
+                      >
                         <option>Child</option>
                         <option>Adult</option>
                         <option>Senior</option>
@@ -249,7 +259,13 @@ export default function Booking() {
             </Card.Body>
             <Card.Footer>
               {selectedSeats.length > 0 && (
-                <Button as={Link} to="/receipt" state={{ selectedSeats, total }} variant="primary" className="w-100">
+                <Button //
+                  as={Link}
+                  to="/receipt"
+                  state={{ pickedMovie, selectedSeats, total, bookingNo }}
+                  variant="primary"
+                  className="w-100"
+                >
                   Book Now!
                 </Button>
               )}

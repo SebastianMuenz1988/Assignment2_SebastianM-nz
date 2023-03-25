@@ -124,17 +124,17 @@
 /* Movie time style */
 .movie-time {
   font-weight: bold;
-  font-size: 1.1rem;
-  margin-right: 1rem;
+  font-size: 1rem;
+  margin-right: 0.8rem;
   text-transform: uppercase;
   color: #6c757d;
 }
 
 /* Movie length style */
 .movie-length {
-  font-size: 1.1rem;
+  font-size: 0.6 rem;
   color: #6c757d;
-  text-transform: uppercase;
+  text-transform: none;
 }
 
 /* Movie categories container style */

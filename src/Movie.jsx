@@ -1,21 +1,27 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Card, Badge } from "react-bootstrap";
+
 export default function Movie({ screening, movie }) {
   if (!screening || !movie) {
     return <div>Error: Screening or Movie is undefined.</div>;
   }
-
   const { screeningId, screeningTime, auditorium } = screening;
   const { id, title, description } = movie;
   const { length, categories, posterImage } = description;
 
   let posterImageURL = "https://cinema-rest.nodehill.se/" + posterImage;
 
+  //----------------Functions-----------------------
+
   function GetTimeDisplay(timeCode) {
     const date = new Date(timeCode);
     return date.toLocaleString();
   }
+  const hours = Math.floor(length / 60);
+  const minutes = length % 60;
+
+  //----------------Return-----------------------
 
   return (
     <Link to={`/booking/${id}`} className="movie-link">
@@ -25,7 +31,9 @@ export default function Movie({ screening, movie }) {
           <Card.Title className="movie-title">{title}</Card.Title>
           <Card.Text className="movie-info">
             <span className="movie-time">{GetTimeDisplay(screeningTime)}</span>
-            <span className="movie-length">{length} min</span>
+            <span className="movie-length">
+              {hours}h {minutes} min
+            </span>
           </Card.Text>
           <div className="movie-categories">
             {categories.map((category) => (
